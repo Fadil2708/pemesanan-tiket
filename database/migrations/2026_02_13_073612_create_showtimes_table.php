@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('showtimes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('film_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('studio_id')->constrained()->cascadeOnDelete();
+            $table->date('show_date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->decimal('price', 12, 2);
             $table->timestamps();
+
+            $table->index('film_id');
+            $table->index('show_date');
         });
     }
 

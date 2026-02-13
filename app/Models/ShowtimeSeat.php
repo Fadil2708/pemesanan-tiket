@@ -2,23 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Ticket extends Model
+class ShowtimeSeat extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'order_id',
+        'showtime_id',
         'seat_id',
-        'price',
-        'qr_code'
+        'status',
+        'locked_at'
     ];
 
-    public function order()
+    public function showtime()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Showtime::class);
     }
 
     public function seat()

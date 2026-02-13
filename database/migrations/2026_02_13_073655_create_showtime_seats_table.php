@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('showtime_seats', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('showtime_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('seat_id')->constrained()->cascadeOnDelete();
+            $table->enum('status', ['available','locked','booked'])->default('available');
+            $table->timestamp('locked_at')->nullable();
             $table->timestamps();
+
+            $table->unique(['showtime_id','seat_id']);
         });
     }
 

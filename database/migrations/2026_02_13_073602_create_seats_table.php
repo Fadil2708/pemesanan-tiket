@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('seats', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('studio_id')->constrained()->cascadeOnDelete();
+            $table->string('seat_number');
+            $table->enum('seat_type', ['regular','vip','couple'])->default('regular');
             $table->timestamps();
+
+            $table->unique(['studio_id', 'seat_number']);
         });
     }
 
