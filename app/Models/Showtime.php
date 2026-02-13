@@ -28,6 +28,11 @@ class Showtime extends Model
         return $this->belongsTo(Studio::class);
     }
 
+    public function showtimeSeats()
+    {
+        return $this->hasMany(\App\Models\ShowtimeSeat::class);
+    }
+
     public function seats()
     {
         return $this->hasMany(ShowtimeSeat::class);

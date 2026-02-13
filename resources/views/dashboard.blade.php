@@ -1,18 +1,34 @@
-<x-layouts::app :title="__('Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
-        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-            </div>
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-            </div>
-            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
-            </div>
+@extends('layouts.app')
+
+@section('content')
+<div style="padding:40px;">
+
+    <h2>Welcome, {{ auth()->user()->name }} 👋</h2>
+
+    <div style="display:flex;gap:30px;margin-top:30px;">
+
+        <div style="padding:20px;border:1px solid #ccc;">
+            <h3>Total Film</h3>
+            <h1>{{ $totalFilms }}</h1>
         </div>
-        <div class="relative h-full flex-1 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-            <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
+
+        <div style="padding:20px;border:1px solid #ccc;">
+            <h3>Total Showtime</h3>
+            <h1>{{ $totalShowtimes }}</h1>
         </div>
+
+        <div style="padding:20px;border:1px solid #ccc;">
+            <h3>Pesanan Saya</h3>
+            <h1>{{ $myOrders }}</h1>
+        </div>
+
     </div>
-</x-layouts::app>
+
+    <div style="margin-top:40px;">
+        <a href="/" style="padding:10px 20px;background:black;color:white;">
+            Lihat Film
+        </a>
+    </div>
+
+</div>
+@endsection
