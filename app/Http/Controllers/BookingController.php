@@ -50,71 +50,65 @@ class BookingController extends Controller
         });
     }
     public function checkout(Request $request)
-    {
-        $request->validate([
-            'showtime_seat_ids' => 'required|array'
+{
+    $request->validate([
+        'showtime_seat_ids' => 'required|array'
+    ]);
+
+    return DB::transaction(function () use ($request) {
+
+        $user = Auth::user();
+
+        $seats = ShowtimeSeat::whereIn('id', $request->showtime_seat_ids)
+            ->lockForUpdate()
+            ->get();
+
+        if ($seats->count() == 0) {
+            return back()->with('error', 'No seats found.');
+        }
+
+        foreach ($seats as $seat) {
+
+            if ($seat->status !== 'locked') {
+                return back()->with('error', 'Seat not locked.');
+            }
+
+            if (!$seat->locked_at ||
+                Carbon::parse($seat->locked_at)->addMinutes(5)->isPast()) {
+                return back()->with('error', 'Seat lock expired.');
+            }
+        }
+
+        $showtime = $seats->first()->showtime;
+        $totalPrice = $showtime->price * $seats->count();
+
+        $order = Order::create([
+            'user_id' => $user->id,
+            'showtime_id' => $showtime->id,
+            'booking_code' => strtoupper(Str::random(8)),
+            'total_price' => $totalPrice,
+            'status' => 'paid',
+            'payment_method' => 'manual'
         ]);
 
-        return DB::transaction(function () use ($request) {
+        foreach ($seats as $seat) {
 
-            $user = Auth::user(); // pastikan sudah login
-
-            $seats = ShowtimeSeat::whereIn('id', $request->showtime_seat_ids)
-                ->lockForUpdate()
-                ->get();
-
-            if ($seats->count() == 0) {
-                return response()->json(['message' => 'No seats found'], 404);
-            }
-
-            // Validasi semua seat masih locked & belum expired
-            foreach ($seats as $seat) {
-
-                if ($seat->status !== 'locked') {
-                    return response()->json(['message' => 'Seat not locked'], 400);
-                }
-
-                if (!$seat->locked_at ||
-                    Carbon::parse($seat->locked_at)->addMinutes(5)->isPast()) {
-                    return response()->json(['message' => 'Seat lock expired'], 400);
-                }
-            }
-
-            // Ambil harga dari showtime
-            $showtime = $seats->first()->showtime;
-            $totalPrice = $showtime->price * $seats->count();
-
-            // Buat Order
-            $order = Order::create([
-                'user_id' => $user->id,
-                'showtime_id' => $showtime->id,
-                'booking_code' => strtoupper(Str::random(8)),
-                'total_price' => $totalPrice,
-                'status' => 'paid',
-                'payment_method' => 'manual'
+            Ticket::create([
+                'order_id' => $order->id,
+                'seat_id' => $seat->seat_id,
+                'price' => $showtime->price,
+                'qr_code' => Str::uuid()
             ]);
 
-            // Generate ticket & update seat
-            foreach ($seats as $seat) {
-
-                Ticket::create([
-                    'order_id' => $order->id,
-                    'seat_id' => $seat->seat_id,
-                    'price' => $showtime->price,
-                    'qr_code' => Str::uuid()
-                ]);
-
-                $seat->update([
-                    'status' => 'booked',
-                    'locked_at' => null
-                ]);
-            }
-
-            return response()->json([
-                'message' => 'Checkout success',
-                'booking_code' => $order->booking_code,
-                'total_price' => $totalPrice
+            $seat->update([
+                'status' => 'booked',
+                'locked_at' => null
             ]);
-        });
-    }
+        }
+
+        return redirect('/dashboard')
+            ->with('success', 'Checkout berhasil! Booking Code: '.$order->booking_code);
+    });
+}
+
 }

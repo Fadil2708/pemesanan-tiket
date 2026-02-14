@@ -13,33 +13,47 @@
         <hr class="mt-2">
     </div>
 
-    <div class="grid grid-cols-5 gap-4">
+    <form method="POST" action="/checkout">
+        @csrf
 
-        @foreach($showtime->showtimeSeats as $seat)
+        <div class="grid grid-cols-5 gap-4 mb-8">
 
-            <form method="POST" action="/lock-seat/{{ $seat->id }}">
-                @csrf
+            @foreach($showtime->showtimeSeats as $seat)
 
-                <button
-                    type="submit"
-                    class="w-full py-3 rounded text-white font-semibold
-                    @if($seat->status == 'available')
-                        bg-green-500 hover:bg-green-600
-                    @elseif($seat->status == 'locked')
-                        bg-orange-500
-                    @else
-                        bg-red-500 cursor-not-allowed
-                    @endif"
-                    @if($seat->status == 'booked') disabled @endif
-                >
-                    {{ $seat->seat->seat_number }}
-                </button>
+                @if($seat->status == 'available' || $seat->status == 'locked')
+                    <label class="cursor-pointer">
+                        <input type="checkbox"
+                               name="showtime_seat_ids[]"
+                               value="{{ $seat->id }}"
+                               class="hidden peer">
 
-            </form>
+                        <div class="w-full py-3 rounded text-white font-semibold text-center
+                            @if($seat->status == 'available')
+                                bg-green-500 peer-checked:bg-green-700
+                            @elseif($seat->status == 'locked')
+                                bg-orange-500
+                            @endif">
+                            {{ $seat->seat->seat_number }}
+                        </div>
+                    </label>
+                @else
+                    <div class="w-full py-3 rounded text-white font-semibold text-center bg-red-500">
+                        {{ $seat->seat->seat_number }}
+                    </div>
+                @endif
 
-        @endforeach
+            @endforeach
 
-    </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit"
+                    class="bg-black text-white px-6 py-3 rounded hover:bg-gray-800">
+                🎟 Checkout
+            </button>
+        </div>
+
+    </form>
 
 </div>
 

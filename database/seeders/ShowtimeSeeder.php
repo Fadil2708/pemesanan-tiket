@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Showtime;
 use Illuminate\Database\Seeder;
+use App\Models\Film;
+use App\Models\Studio;
 
 class ShowtimeSeeder extends Seeder
 {
@@ -12,23 +14,26 @@ class ShowtimeSeeder extends Seeder
      */
     public function run(): void
     {
+        $studio = Studio::first();
+        $film1 = Film::first();
+        $film2 = Film::skip(1)->first();
+
         Showtime::create([
-            'film_id' => 1,
-            'studio_id' => 1,
-            'show_date' => '2026-02-15',
-            'start_time' => '19:00:00',
-            'end_time' => '21:00:00',
+            'film_id' => $film1->id,
+            'studio_id' => $studio->id,
+            'show_date' => now()->toDateString(),
+            'start_time' => '18:00',
+            'end_time' => '21:00',
             'price' => 50000
         ]);
 
         Showtime::create([
-            'film_id' => 2,
-            'studio_id' => 2,
-            'show_date' => '2026-02-15',
-            'start_time' => '16:00:00',
-            'end_time' => '18:00:00',
-            'price' => 45000
+            'film_id' => $film2->id,
+            'studio_id' => $studio->id,
+            'show_date' => now()->toDateString(),
+            'start_time' => '21:30',
+            'end_time' => '23:59',
+            'price' => 60000
         ]);
     }
-
 }

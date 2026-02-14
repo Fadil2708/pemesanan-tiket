@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Film;
 use App\Models\Showtime;
 use App\Models\Order;
+use App\Http\Controllers\BookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,7 +12,7 @@ use App\Models\Order;
 |--------------------------------------------------------------------------
 */
 
-// Home (WAJIB punya name('home'))
+// Home
 Route::get('/', function () {
     $films = Film::all();
     return view('home', compact('films'));
@@ -23,21 +24,16 @@ Route::get('/film/{id}', function ($id) {
     return view('film-detail', compact('film'));
 })->name('film.detail');
 
-// Detail Showtime
-Route::get('/showtime/{id}', function ($id) {
-    $showtime = Showtime::with('showtimeSeats.seat')->findOrFail($id);
-    return view('showtime', compact('showtime'));
-})->middleware('auth')->name('showtime.detail');
-
 
 /*
 |--------------------------------------------------------------------------
-| Authenticated Routes
+| Customer Routes (Authenticated)
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth')->group(function () {
 
+    // Dashboard
     Route::get('/dashboard', function () {
 
         $totalFilms = Film::count();
@@ -50,6 +46,34 @@ Route::middleware('auth')->group(function () {
             'myOrders'
         ));
     })->name('dashboard');
+
+    // Detail Showtime
+    Route::get('/showtime/{id}', function ($id) {
+        $showtime = Showtime::with('showtimeSeats.seat')->findOrFail($id);
+        return view('showtime', compact('showtime'));
+    })->name('showtime.detail');
+
+    // Lock Seat
+    Route::post('/lock-seat/{id}', [BookingController::class, 'lockSeat'])
+        ->name('seat.lock');
+
+    // Checkout
+    Route::post('/checkout', [BookingController::class, 'checkout'])
+        ->name('checkout');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
 
 });
 

@@ -29,6 +29,17 @@
 </nav>
 
 <div style="padding:40px;">
+    @if(session('success'))
+        <div style="background:green;color:white;padding:10px;margin:10px;">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div style="background:red;color:white;padding:10px;margin:10px;">
+            {{ session('error') }}
+        </div>
+    @endif
     @yield('content')
 </div>
 

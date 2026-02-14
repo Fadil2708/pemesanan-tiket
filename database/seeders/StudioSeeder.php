@@ -12,6 +12,9 @@ class StudioSeeder extends Seeder
      */
     public function run(): void
     {
-        Studio::create(['name' => 'Studio 2']);
+        Studio::create([
+            'name' => 'Studio 1',
+            'type' => 'IMAX'
+        ]);
     }
 }
