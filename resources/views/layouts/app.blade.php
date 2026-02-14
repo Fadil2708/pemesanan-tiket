@@ -23,7 +23,15 @@
                 </button>
             </form>
         @else
-            <a href="/login" style="color:white;">Login</a>
+           @guest
+                <a href="{{ route('login.role', 'customer') }}" class="mr-4">
+                    Login Customer
+                </a>
+
+                <a href="{{ route('login.role', 'admin') }}">
+                    Login Admin
+                </a>
+            @endguest
         @endauth
     </div>
 </nav>

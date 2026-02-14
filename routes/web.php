@@ -5,6 +5,7 @@ use App\Models\Film;
 use App\Models\Showtime;
 use App\Models\Order;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +77,24 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     })->name('admin.dashboard');
 
 });
+
+// Login
+Route::get('/login/{role}', [AuthController::class, 'showLogin'])
+    ->name('login.role');
+
+Route::post('/login', [AuthController::class, 'login'])
+    ->name('login.process');
+
+// Register
+Route::get('/register/{role}', [AuthController::class, 'showRegister'])
+    ->name('register.role');
+
+Route::post('/register', [AuthController::class, 'register'])
+    ->name('register.process');
+
+// Logout
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->name('logout');
 
 
 require __DIR__.'/settings.php';
