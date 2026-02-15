@@ -8,6 +8,13 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
+    protected function redirectTo($request)
+{
+    if (!$request->expectsJson()) {
+        return route('login.role', 'customer');
+    }
+}
+
     public function handle(Request $request, Closure $next, string $role)
     {
         if (!Auth::check()) {

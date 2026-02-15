@@ -1,55 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pemesanan Tiket Film</title>
+    <title>BioskopApp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="bg-gray-950 text-white min-h-screen">
 
-<nav style="padding:15px;background:#111;color:white;display:flex;justify-content:space-between;">
-    <div>
+{{-- NAVBAR --}}
+<nav class="bg-black border-b border-gray-800 px-8 py-4 flex justify-between items-center">
+
+    <a href="{{ route('home') }}" class="text-xl font-bold tracking-wide">
         🎬 BioskopApp
-    </div>
+    </a>
 
-    <div>
+    <div class="flex items-center gap-6 text-sm">
+
         @auth
-            Halo, {{ auth()->user()->name }}
-            |
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+            <span class="text-gray-400">
+                Halo, {{ auth()->user()->name }}
+            </span>
+
+            <a href="{{ route('dashboard') }}"
+               class="hover:text-red-500 transition">
+                Dashboard
+            </a>
+
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button style="background:none;border:none;color:white;cursor:pointer;">
+                <button class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded transition">
                     Logout
                 </button>
             </form>
         @else
-           @guest
-                <a href="{{ route('login.role', 'customer') }}" class="mr-4">
-                    Login Customer
-                </a>
-
-                <a href="{{ route('login.role', 'admin') }}">
-                    Login Admin
-                </a>
-            @endguest
+            <a href="{{ route('login.role', 'customer') }}"
+               class="hover:text-red-500 transition">
+                Login Customer
+            </a>
         @endauth
+
     </div>
+
 </nav>
 
-<div style="padding:40px;">
+{{-- CONTENT --}}
+<main class="px-8 py-12">
+
     @if(session('success'))
-        <div style="background:green;color:white;padding:10px;margin:10px;">
+        <div class="bg-green-500 text-white p-3 rounded mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div style="background:red;color:white;padding:10px;margin:10px;">
+        <div class="bg-red-500 text-white p-3 rounded mb-6">
             {{ session('error') }}
         </div>
     @endif
+
     @yield('content')
-</div>
+
+</main>
 
 </body>
 </html>

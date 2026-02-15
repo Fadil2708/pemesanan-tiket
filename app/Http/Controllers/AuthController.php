@@ -9,6 +9,13 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    protected function redirectTo($request)
+{
+    if (!$request->expectsJson()) {
+        return route('login.role', 'customer');
+    }
+}
+
     // Show login form
     public function showLogin($role)
     {

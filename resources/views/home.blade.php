@@ -1,37 +1,70 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('content')
 
-<div class="max-w-6xl mx-auto">
+<div class="bg-black text-white min-h-screen">
 
-    <h2 class="text-3xl font-bold mb-8 text-center">
-        🎬 Daftar Film
-    </h2>
+    {{-- HERO --}}
+    <section class="relative h-[80vh] flex items-center justify-center text-center bg-gradient-to-br from-black via-gray-900 to-black">
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        <div>
+            <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                🎬 BioskopApp
+            </h1>
 
-        @foreach($films as $film)
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-6 border">
+            <p class="text-gray-400 mb-8 max-w-xl mx-auto">
+                Rasakan pengalaman nonton modern.
+                Pilih film favoritmu dan pesan kursi sekarang.
+            </p>
 
-                <h3 class="text-xl font-semibold mb-2">
-                    {{ $film->title }}
-                </h3>
+            <a href="{{ route('register.role','customer') }}"
+               class="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-lg font-semibold transition">
+                Mulai Sekarang
+            </a>
+        </div>
 
-                <p class="text-gray-500 mb-4">
-                    Durasi: {{ $film->duration }} menit
-                </p>
+    </section>
 
-                <div class="mt-4">
-                    <a href="{{ route('film.detail', $film->id) }}"
-                       class="inline-block bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
-                        🎥 Detail Film
-                    </a>
-                </div>
+    {{-- NOW SHOWING --}}
+    <section class="px-8 py-16">
 
-            </div>
-        @endforeach
+        <h2 class="text-3xl font-bold mb-10">
+            🎥 Now Showing
+        </h2>
 
-    </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+
+            @foreach($films as $film)
+
+                <a href="{{ route('film.detail',$film->id) }}"
+                   class="group relative overflow-hidden rounded-lg shadow-lg">
+
+                    @if($film->poster)
+                        <img src="{{ asset('storage/'.$film->poster) }}"
+                             class="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500">
+                    @else
+                        <div class="w-full h-80 bg-gray-800 flex items-center justify-center">
+                            No Poster
+                        </div>
+                    @endif
+
+                    {{-- Gradient Overlay --}}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80"></div>
+
+                    {{-- Title --}}
+                    <div class="absolute bottom-4 left-4 right-4">
+                        <h3 class="text-lg font-semibold">
+                            {{ $film->title }}
+                        </h3>
+                    </div>
+
+                </a>
+
+            @endforeach
+
+        </div>
+
+    </section>
 
 </div>
 

@@ -11,6 +11,7 @@ class Film extends Model
 
     protected $fillable = [
         'title',
+        'poster',
         'description',
         'duration',
         'age_rating',

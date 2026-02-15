@@ -6,6 +6,10 @@ use App\Models\Showtime;
 use App\Models\Order;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\admin\FilmController;
+use App\Http\Controllers\admin\ShowtimeController;
+use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\OrderHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +24,7 @@ Route::get('/', function () {
 })->name('home');
 
 // Detail Film
-Route::get('/film/{id}', function ($id) {
-    $film = Film::with('showtimes')->findOrFail($id);
-    return view('film-detail', compact('film'));
-})->name('film.detail');
+
 
 
 /*
@@ -61,6 +62,19 @@ Route::middleware('auth')->group(function () {
     // Checkout
     Route::post('/checkout', [BookingController::class, 'checkout'])
         ->name('checkout');
+    
+    Route::get('/film/{id}', function ($id) {
+        $film = Film::with('showtimes')->findOrFail($id);
+        return view('film-detail', compact('film'));
+    })->middleware('auth')
+    ->name('film.detail');
+
+
+    Route::get('/my-orders', [OrderHistoryController::class, 'index'])
+        ->name('my.orders');
+
+    Route::get('/my-orders/{order}', [OrderHistoryController::class, 'show'])
+        ->name('my.orders.show');
 });
 
 
@@ -70,13 +84,33 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->group(function () {
 
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
 
+        $totalFilms = Film::count();
+        $totalShowtimes = Showtime::count();
+        $totalOrders = Order::count();
+
+        return view('admin.dashboard', compact(
+            'totalFilms',
+            'totalShowtimes',
+            'totalOrders'
+        ));
+    })->name('admin.dashboard');
+    Route::resource('films', FilmController::class);
+    Route::resource('showtimes', ShowtimeController::class);
+    Route::get('orders', [OrderController::class, 'index'])
+    ->name('orders.index');
+    Route::get('orders/{order}', [OrderController::class, 'show'])
+        ->name('orders.show');
+
+    Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])
+        ->name('orders.cancel');
 });
+
 
 // Login
 Route::get('/login/{role}', [AuthController::class, 'showLogin'])

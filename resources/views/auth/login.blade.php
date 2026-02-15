@@ -11,7 +11,7 @@
                 🎬 BioskopApp
             </h1>
             <p class="text-gray-400 mt-2">
-                Login {{ ucfirst($role) }}
+                Login {{ ucfirst($role ?? 'Customer') }}
             </p>
         </div>
 
