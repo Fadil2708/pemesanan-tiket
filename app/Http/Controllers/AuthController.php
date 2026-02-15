@@ -52,16 +52,25 @@ class AuthController extends Controller
             'password' => 'required|min:6'
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'password' => Hash::make($request->password),
+            'password' => bcrypt($request->password),
             'role' => $request->role
         ]);
 
-        return redirect()->route('login.role', $request->role);
+        // AUTO LOGIN
+        Auth::login($user);
+
+        // Redirect sesuai role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('dashboard');
     }
+
 
     public function logout()
     {
