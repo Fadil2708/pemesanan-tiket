@@ -87,8 +87,9 @@ class BookingController extends Controller
             'showtime_id' => $showtime->id,
             'booking_code' => strtoupper(Str::random(8)),
             'total_price' => $totalPrice,
-            'status' => 'paid',
-            'payment_method' => 'manual'
+            'status' => 'pending',
+            'payment_method' => 'manual',
+            'expires_at' => now()->addMinutes(10)
         ]);
 
         foreach ($seats as $seat) {
@@ -110,5 +111,4 @@ class BookingController extends Controller
             ->with('success', 'Checkout berhasil! Booking Code: '.$order->booking_code);
     });
 }
-
 }

@@ -1,3 +1,4 @@
+use Carbon\Traits\Date;
 @extends('layouts.app')
 
 @section('content')
@@ -80,6 +81,19 @@
             </div>
         </div>
 
+        {{-- COUNTDOWN TIMER --}}
+        <div id="countdownContainer"
+            class="hidden mb-8 text-center">
+
+            <div class="inline-block bg-red-600/20 border border-red-500 text-red-400 px-6 py-3 rounded-lg text-sm font-semibold">
+                ⏳ Waktu Tersisa:
+                <span id="countdownTimer" class="ml-2 font-bold text-white">
+                    05:00
+                </span>
+            </div>
+
+        </div>
+
         {{-- SUMMARY --}}
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-xl mx-auto">
 
@@ -114,6 +128,45 @@ document.addEventListener('DOMContentLoaded', function () {
     const checkboxes = document.querySelectorAll('.seat-checkbox');
     const totalPriceEl = document.getElementById('totalPrice');
     const selectedSeatsEl = document.getElementById('selectedSeats');
+    const countdownContainer = document.getElementById('countdownContainer');
+    const countdownTimer = document.getElementById('countdownTimer');
+    const checkoutButton = document.querySelector('button[type="submit"]');
+
+    let countdownInterval = null;
+    let expireTime = null;
+
+    function startCountdown(expiresAt) {
+
+        expireTime = new Date(expiresAt).getTime();
+
+        countdownContainer.classList.remove('hidden');
+
+        countdownInterval = setInterval(function () {
+
+            const now = new Date().getTime();
+            const distance = expireTime - now;
+
+            if (distance <= 0) {
+                clearInterval(countdownInterval);
+
+                countdownTimer.innerText = "00:00";
+                checkoutButton.disabled = true;
+                checkoutButton.classList.add('opacity-50','cursor-not-allowed');
+
+                alert("Waktu pemesanan kursi habis!");
+                location.reload();
+                return;
+            }
+
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownTimer.innerText =
+                String(minutes).padStart(2,'0') + ":" +
+                String(seconds).padStart(2,'0');
+
+        }, 1000);
+    }
 
     function updateTotal() {
         let total = 0;
@@ -150,7 +203,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         alert(data.message);
                         this.checked = false;
                     } else {
+
                         updateTotal();
+
+                        // start timer hanya kalau belum jalan
+                        if (!countdownInterval) {
+                            startCountdown(data.expires_at);
+                        }
                     }
 
                 })
@@ -169,5 +228,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
-
 @endsection

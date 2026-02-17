@@ -68,7 +68,6 @@ Route::middleware('auth')->group(function () {
     ->middleware('auth')
     ->name('seat.lock');
 
-
     Route::post('/checkout', [BookingController::class, 'checkout'])
         ->name('checkout');
 
@@ -77,7 +76,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/my-orders/{order}', [OrderHistoryController::class, 'show'])
         ->name('my.orders.show');
-});
+        
+    Route::get('/profile', function () {
+        return view('profile');
+    })->name('profile');
+
+    Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    });
 
 
 /*

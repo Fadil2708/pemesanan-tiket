@@ -5,7 +5,7 @@
 <div class="max-w-7xl mx-auto space-y-12">
 
     {{-- HERO SECTION --}}
-    <div class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-10 rounded-2xl border border-gray-800 shadow-xl">
+    <div class="stat-card bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-10 rounded-2xl border border-gray-800 shadow-xl transition opacity-0 translate-y-10">
         <h1 class="text-4xl font-bold mb-3">
             Welcome back, {{ auth()->user()->name }} 👋
         </h1>
@@ -26,7 +26,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {{-- Total Orders --}}
-        <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-red-500 transition">
+        <div class="stat-card bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-red-500 transition opacity-0 translate-y-10">
             <p class="text-gray-400 text-sm mb-2">Total Pesanan</p>
             <h2 class="text-4xl font-bold text-red-500 counter" 
                 data-target="{{ $myOrders }}">
@@ -36,7 +36,7 @@
         </div>
 
         {{-- Dummy Loyalty Points (Future Upgrade) --}}
-        <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-red-500 transition">
+        <div class="stat-card bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-red-500 transition opacity-0 translate-y-10">
             <p class="text-gray-400 text-sm mb-2">Loyalty Points</p>
             <h2 class="text-4xl font-bold text-green-400 counter" 
                 data-target="{{ $myOrders * 10 }}">
@@ -46,7 +46,7 @@
         </div>
 
         {{-- Membership Level --}}
-        <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-red-500 transition">
+        <div class="stat-card bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-red-500 transition opacity-0 translate-y-10">
             <p class="text-gray-400 text-sm mb-2">Membership</p>
             <h2 class="text-2xl font-bold text-yellow-400">
                 Silver Member
@@ -57,8 +57,7 @@
 
 
     {{-- RECENT ORDERS --}}
-    <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800">
-
+    <div class="stat-card bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-red-500 transition opacity-0 translate-y-10">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold">
                 🎟 Pesanan Terakhir
@@ -171,6 +170,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     counters.forEach(counter => {
         observer.observe(counter);
+    });
+
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const cards = document.querySelectorAll('.stat-card');
+
+    const observer = new IntersectionObserver((entries) => {
+
+        entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+                entry.target.classList.remove('opacity-0', 'translate-y-10');
+                entry.target.classList.add('opacity-100', 'translate-y-0', 'transition-all', 'duration-700');
+
+                observer.unobserve(entry.target);
+            }
+
+        });
+
+    }, {
+        threshold: 0.2
+    });
+
+    cards.forEach(card => {
+        observer.observe(card);
     });
 
 });
