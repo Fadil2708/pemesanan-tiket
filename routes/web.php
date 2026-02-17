@@ -10,6 +10,15 @@ use App\Http\Controllers\admin\FilmController;
 use App\Http\Controllers\admin\ShowtimeController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\OrderHistoryController;
+/*
+|--------------------------------------------------------------------------
+| Default Login Redirect (WAJIB)
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', function () {
+    return redirect()->route('customer.login');
+})->name('login');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,27 +26,21 @@ use App\Http\Controllers\OrderHistoryController;
 |--------------------------------------------------------------------------
 */
 
-// Home
 Route::get('/', function () {
     $films = Film::all();
     return view('home', compact('films'));
 })->name('home');
 
-// Detail Film
-
-
 
 /*
 |--------------------------------------------------------------------------
-| Customer Routes (Authenticated)
+| Customer Routes
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth')->group(function () {
 
-    // Dashboard
     Route::get('/dashboard', function () {
-
         $totalFilms = Film::count();
         $totalShowtimes = Showtime::count();
         $myOrders = Order::where('user_id', auth()->id())->count();
@@ -49,26 +52,21 @@ Route::middleware('auth')->group(function () {
         ));
     })->name('dashboard');
 
-    // Detail Showtime
+    Route::get('/film/{id}', function ($id) {
+        $film = Film::with('showtimes')->findOrFail($id);
+        return view('film-detail', compact('film'));
+    })->name('film.detail');
+
     Route::get('/showtime/{id}', function ($id) {
         $showtime = Showtime::with('showtimeSeats.seat')->findOrFail($id);
         return view('showtime', compact('showtime'));
     })->name('showtime.detail');
 
-    // Lock Seat
     Route::post('/lock-seat/{id}', [BookingController::class, 'lockSeat'])
         ->name('seat.lock');
 
-    // Checkout
     Route::post('/checkout', [BookingController::class, 'checkout'])
         ->name('checkout');
-    
-    Route::get('/film/{id}', function ($id) {
-        $film = Film::with('showtimes')->findOrFail($id);
-        return view('film-detail', compact('film'));
-    })->middleware('auth')
-    ->name('film.detail');
-
 
     Route::get('/my-orders', [OrderHistoryController::class, 'index'])
         ->name('my.orders');
@@ -88,47 +86,63 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->group(function () {
 
-    Route::get('/dashboard', function () {
+        Route::get('/dashboard', function () {
+            $totalFilms = Film::count();
+            $totalShowtimes = Showtime::count();
+            $totalOrders = Order::count();
 
-        $totalFilms = Film::count();
-        $totalShowtimes = Showtime::count();
-        $totalOrders = Order::count();
+            return view('admin.dashboard', compact(
+                'totalFilms',
+                'totalShowtimes',
+                'totalOrders'
+            ));
+        })->name('admin.dashboard');
 
-        return view('admin.dashboard', compact(
-            'totalFilms',
-            'totalShowtimes',
-            'totalOrders'
-        ));
-    })->name('admin.dashboard');
-    Route::resource('films', FilmController::class);
-    Route::resource('showtimes', ShowtimeController::class);
-    Route::get('orders', [OrderController::class, 'index'])
-    ->name('orders.index');
-    Route::get('orders/{order}', [OrderController::class, 'show'])
-        ->name('orders.show');
+        Route::resource('films', FilmController::class);
+        Route::resource('showtimes', ShowtimeController::class);
 
-    Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])
-        ->name('orders.cancel');
+        Route::get('orders', [OrderController::class, 'index'])
+            ->name('orders.index');
+
+        Route::get('orders/{order}', [OrderController::class, 'show'])
+            ->name('orders.show');
+
+        Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])
+            ->name('orders.cancel');
 });
 
 
-// Login
-Route::get('/login/{role}', [AuthController::class, 'showLogin'])
-    ->name('login.role');
+/*
+|--------------------------------------------------------------------------
+| Customer Auth
+|--------------------------------------------------------------------------
+*/
 
-Route::post('/login', [AuthController::class, 'login'])
-    ->name('login.process');
+Route::get('/login/customer', [AuthController::class, 'showCustomerLogin'])
+    ->name('customer.login');
 
-// Register
-Route::get('/register/{role}', [AuthController::class, 'showRegister'])
-    ->name('register.role');
+Route::post('/login/customer', [AuthController::class, 'loginCustomer'])
+    ->name('customer.login.process');
+
+Route::get('/register', [AuthController::class, 'showRegister'])
+    ->name('register');
 
 Route::post('/register', [AuthController::class, 'register'])
     ->name('register.process');
 
-// Logout
+
+/*
+|--------------------------------------------------------------------------
+| Admin Auth
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])
+    ->name('admin.login');
+
+Route::post('/admin/login', [AuthController::class, 'loginAdmin'])
+    ->name('admin.login.process');
+
+
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
-
-
-require __DIR__.'/settings.php';

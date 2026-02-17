@@ -4,38 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    protected function redirectTo($request)
-{
-    if (!$request->expectsJson()) {
-        return route('login.role', 'customer');
-    }
-}
+    /*
+    |-----------------------------
+    | CUSTOMER LOGIN
+    |-----------------------------
+    */
 
-    // Show login form
-    public function showLogin($role)
+    public function showCustomerLogin()
     {
-        return view('auth.login', compact('role'));
+        return view('auth.customer-login');
     }
 
-    // Handle login
-    public function login(Request $request)
+    public function loginCustomer(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
 
-            if (Auth::user()->role !== $request->role) {
+            if (Auth::user()->role !== 'customer') {
                 Auth::logout();
-                return back()->withErrors(['email' => 'Role tidak sesuai']);
-            }
-
-            if ($request->role === 'admin') {
-                return redirect()->route('admin.dashboard');
+                return back()->withErrors(['email' => 'Akses ditolak']);
             }
 
             return redirect()->route('dashboard');
@@ -44,19 +36,51 @@ class AuthController extends Controller
         return back()->withErrors(['email' => 'Login gagal']);
     }
 
-    // Show register
-    public function showRegister($role)
+    /*
+    |-----------------------------
+    | ADMIN LOGIN
+    |-----------------------------
+    */
+
+    public function showAdminLogin()
     {
-        return view('auth.register', compact('role'));
+        return view('auth.admin-login');
     }
 
-    // Handle register
+    public function loginAdmin(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+
+            if (Auth::user()->role !== 'admin') {
+                Auth::logout();
+                return back()->withErrors(['email' => 'Bukan akun admin']);
+            }
+
+            return redirect()->route('admin.dashboard');
+        }
+
+        return back()->withErrors(['email' => 'Login gagal']);
+    }
+
+    /*
+    |-----------------------------
+    | REGISTER (CUSTOMER ONLY)
+    |-----------------------------
+    */
+
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6'
+            'password' => 'required|min:6|confirmed',
         ]);
 
         $user = User::create([
@@ -64,20 +88,13 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => bcrypt($request->password),
-            'role' => $request->role
+            'role' => 'customer'
         ]);
 
-        // AUTO LOGIN
         Auth::login($user);
-
-        // Redirect sesuai role
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
 
         return redirect()->route('dashboard');
     }
-
 
     public function logout()
     {

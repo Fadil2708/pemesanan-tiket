@@ -17,7 +17,7 @@
                 Pilih film favoritmu dan pesan kursi sekarang.
             </p>
 
-            <a href="{{ route('register.role','customer') }}"
+            <a href="{{ route('register') }}"
                class="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-lg font-semibold transition">
                 Mulai Sekarang
             </a>
