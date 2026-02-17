@@ -25,12 +25,14 @@ Route::get('/login', function () {
 | Public Routes
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', function () {
-    $films = Film::all();
-    return view('home', compact('films'));
-})->name('home');
 
+    $heroFilms = Film::latest()->take(5)->get(); // ambil 5 film terbaru
+    $films = Film::latest()->get();
+
+    return view('home', compact('films', 'heroFilms'));
+
+})->name('home');
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +65,9 @@ Route::middleware('auth')->group(function () {
     })->name('showtime.detail');
 
     Route::post('/lock-seat/{id}', [BookingController::class, 'lockSeat'])
-        ->name('seat.lock');
+    ->middleware('auth')
+    ->name('seat.lock');
+
 
     Route::post('/checkout', [BookingController::class, 'checkout'])
         ->name('checkout');
