@@ -110,7 +110,6 @@ document.getElementById('avatarInput').addEventListener('change', function(event
     const file = event.target.files[0];
     if (!file) return;
 
-    // @ts-ignore
     const reader = new FileReader();
     reader.onload = function(e) {
         const preview = document.getElementById('avatarPreview');

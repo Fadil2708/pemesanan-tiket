@@ -18,9 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('seats:release-expired')
-            ->everyMinute();
         $schedule->command('cancel:expired-orders')->everyMinute();
+        $schedule->command('seats:release-expired')->everyMinute();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

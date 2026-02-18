@@ -1,4 +1,3 @@
-use Carbon\Traits\Date;
 @extends('layouts.app')
 
 @section('content')

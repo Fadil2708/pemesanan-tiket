@@ -15,7 +15,12 @@ class Order extends Model
         'booking_code',
         'total_price',
         'status',
-        'payment_method'
+        'payment_method',
+        'expires_at'
+    ];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
     ];
 
     public function user()
