@@ -1,15 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Models\Film;
-use App\Models\Showtime;
-use App\Models\Order;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\admin\FilmController;
-use App\Http\Controllers\admin\ShowtimeController;
 use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\ShowtimeController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\OrderHistoryController;
+use App\Models\Film;
+use App\Models\Order;
+use App\Models\Showtime;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Default Login Redirect (WAJIB)
@@ -18,7 +19,6 @@ use App\Http\Controllers\OrderHistoryController;
 Route::get('/login', function () {
     return redirect()->route('customer.login');
 })->name('login');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +33,10 @@ Route::get('/', function () {
     return view('home', compact('films', 'heroFilms'));
 
 })->name('home');
+
+// Midtrans Webhook
+Route::post('/midtrans/webhook', [\App\Http\Controllers\MidtransWebhookController::class, 'handle'])
+    ->name('midtrans.webhook');
 
 /*
 |--------------------------------------------------------------------------
@@ -56,17 +60,26 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/film/{id}', function ($id) {
         $film = Film::with('showtimes')->findOrFail($id);
+
         return view('film-detail', compact('film'));
     })->name('film.detail');
 
     Route::get('/showtime/{id}', function ($id) {
         $showtime = Showtime::with('showtimeSeats.seat')->findOrFail($id);
+
+        // Release expired locked seats for this showtime
+        app(\App\Services\BookingService::class)->releaseExpiredLocksForShowtime($showtime->id);
+
         return view('showtime', compact('showtime'));
     })->name('showtime.detail');
 
     Route::post('/lock-seat/{id}', [BookingController::class, 'lockSeat'])
-    ->middleware('auth')
-    ->name('seat.lock');
+        ->middleware('auth')
+        ->name('seat.lock');
+
+    Route::post('/check-seats-status', [BookingController::class, 'checkSeatsStatus'])
+        ->middleware('auth')
+        ->name('seats.check');
 
     Route::post('/checkout', [BookingController::class, 'checkout'])
         ->name('checkout');
@@ -76,7 +89,13 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/my-orders/{order}', [OrderHistoryController::class, 'show'])
         ->name('my.orders.show');
-        
+
+    Route::post('/my-orders/{order}/pay', [OrderHistoryController::class, 'pay'])
+        ->name('my.orders.pay');
+
+    Route::get('/my-orders/{order}/status', [OrderHistoryController::class, 'checkStatus'])
+        ->name('my.orders.status');
+
     Route::get('/profile', function () {
         return view('profile');
     })->name('profile');
@@ -84,8 +103,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])
         ->name('profile.update');
 
-    });
-
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -120,8 +138,7 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::patch('orders/{order}/cancel', [OrderController::class, 'cancel'])
             ->name('orders.cancel');
-});
-
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -141,7 +158,6 @@ Route::get('/register', [AuthController::class, 'showRegister'])
 Route::post('/register', [AuthController::class, 'register'])
     ->name('register.process');
 
-
 /*
 |--------------------------------------------------------------------------
 | Admin Auth
@@ -153,7 +169,6 @@ Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])
 
 Route::post('/admin/login', [AuthController::class, 'loginAdmin'])
     ->name('admin.login.process');
-
 
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');

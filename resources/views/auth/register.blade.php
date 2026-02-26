@@ -2,94 +2,70 @@
 
 @section('content')
 
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black">
-
-    <div class="bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl p-10 w-full max-w-md text-white">
-
+<div class="w-full max-w-md">
+    <div class="glass-card rounded-2xl p-8 md:p-10">
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-red-500 tracking-wide">
-                🎬 Buat Akun
-            </h1>
-            <p class="text-gray-400 mt-2 text-sm">
-                Daftar dan mulai pesan tiket favoritmu
-            </p>
+            <div class="text-6xl mb-4">🎬</div>
+            <h1 class="text-3xl font-bold text-white mb-2">Buat Akun</h1>
+            <p class="text-gray-400 text-sm">Daftar dan mulai pesan tiket favoritmu</p>
         </div>
 
-        {{-- Error Message --}}
         @if($errors->any())
-            <div class="bg-red-500/20 border border-red-500 text-red-400 p-3 rounded mb-6 text-sm">
-                {{ $errors->first() }}
+            <div class="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-xl mb-6 text-sm flex items-center gap-3">
+                <span>⚠️</span> {{ $errors->first() }}
             </div>
         @endif
 
-        <form method="POST" action="{{ route('register.process') }}">
+        <form method="POST" action="{{ route('register.process') }}" class="space-y-5">
             @csrf
 
-            {{-- Name --}}
-            <div class="mb-4">
-                <input type="text"
-                       name="name"
-                       value="{{ old('name') }}"
-                       placeholder="Nama Lengkap"
-                       required
-                       class="w-full px-4 py-3 rounded-lg bg-black/40 border border-gray-700 focus:border-red-500 focus:ring-2 focus:ring-red-500 outline-none transition">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Nama Lengkap</label>
+                <input type="text" name="name" value="{{ old('name') }}"
+                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white placeholder-gray-500"
+                    placeholder="John Doe" required>
             </div>
 
-            {{-- Email --}}
-            <div class="mb-4">
-                <input type="email"
-                       name="email"
-                       value="{{ old('email') }}"
-                       placeholder="Email Address"
-                       required
-                       class="w-full px-4 py-3 rounded-lg bg-black/40 border border-gray-700 focus:border-red-500 focus:ring-2 focus:ring-red-500 outline-none transition">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <input type="email" name="email" value="{{ old('email') }}"
+                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white placeholder-gray-500"
+                    placeholder="nama@email.com" required>
             </div>
 
-            {{-- Phone --}}
-            <div class="mb-4">
-                <input type="text"
-                       name="phone"
-                       value="{{ old('phone') }}"
-                       placeholder="Nomor HP (Optional)"
-                       class="w-full px-4 py-3 rounded-lg bg-black/40 border border-gray-700 focus:border-red-500 focus:ring-2 focus:ring-red-500 outline-none transition">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Nomor HP (Opsional)</label>
+                <input type="text" name="phone" value="{{ old('phone') }}"
+                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white placeholder-gray-500"
+                    placeholder="0812-3456-7890">
             </div>
 
-            {{-- Password --}}
-            <div class="mb-4">
-                <input type="password"
-                       name="password"
-                       placeholder="Password"
-                       required
-                       class="w-full px-4 py-3 rounded-lg bg-black/40 border border-gray-700 focus:border-red-500 focus:ring-2 focus:ring-red-500 outline-none transition">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                <input type="password" name="password"
+                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white placeholder-gray-500"
+                    placeholder="Minimal 8 karakter" required>
             </div>
 
-            {{-- Confirm Password --}}
-            <div class="mb-6">
-                <input type="password"
-                       name="password_confirmation"
-                       placeholder="Konfirmasi Password"
-                       required
-                       class="w-full px-4 py-3 rounded-lg bg-black/40 border border-gray-700 focus:border-red-500 focus:ring-2 focus:ring-red-500 outline-none transition">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation"
+                    class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-white placeholder-gray-500"
+                    placeholder="Ulangi password" required>
             </div>
 
-            {{-- Submit --}}
-            <button type="submit"
-                class="w-full bg-red-600 hover:bg-red-700 transition py-3 rounded-lg font-semibold tracking-wide shadow-lg">
-                DAFTAR
+            <button type="submit" class="btn-primary w-full py-3 rounded-xl font-semibold text-white">
+                Daftar
             </button>
-
         </form>
 
         <div class="text-center mt-6 text-sm text-gray-400">
             Sudah punya akun?
-            <a href="{{ route('customer.login') }}"
-               class="text-red-500 hover:underline">
+            <a href="{{ route('customer.login') }}" class="text-red-400 hover:text-red-300 font-semibold transition">
                 Login
             </a>
         </div>
-
     </div>
-
 </div>
 
 @endsection

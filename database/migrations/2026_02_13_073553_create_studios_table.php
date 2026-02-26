@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('studios', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['2D','3D','IMAX','Dolby'])->default('2D');
+            $table->enum('type', ['2D', '3D', 'IMAX', 'Dolby'])->default('2D');
             $table->timestamps();
         });
     }

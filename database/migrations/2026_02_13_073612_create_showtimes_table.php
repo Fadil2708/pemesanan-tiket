@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->index('film_id');
             $table->index('show_date');
+            $table->unique(['studio_id', 'show_date', 'start_time'], 'unique_showtime_slot');
         });
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Showtime extends Model
 {
@@ -15,7 +15,7 @@ class Showtime extends Model
         'show_date',
         'start_time',
         'end_time',
-        'price'
+        'price',
     ];
 
     public function film()
@@ -46,18 +46,22 @@ class Showtime extends Model
     protected static function booted()
     {
         static::created(function ($showtime) {
+            try {
+                $seats = $showtime->studio->seats;
 
-            $seats = $showtime->studio->seats;
-
-            foreach ($seats as $seat) {
-                \App\Models\ShowtimeSeat::create([
+                $showtimeSeats = $seats->map(fn ($seat) => [
                     'showtime_id' => $showtime->id,
-                    'seat_id'     => $seat->id,
-                    'status'      => 'available'
+                    'seat_id' => $seat->id,
+                    'status' => 'available',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
-            }
 
+                \App\Models\ShowtimeSeat::insert($showtimeSeats->toArray());
+            } catch (\Exception $e) {
+                \Log::error('Failed to create showtime seats: '.$e->getMessage());
+                throw $e;
+            }
         });
     }
-
 }

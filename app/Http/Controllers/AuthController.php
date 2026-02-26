@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -27,6 +27,7 @@ class AuthController extends Controller
 
             if (Auth::user()->role !== 'customer') {
                 Auth::logout();
+
                 return back()->withErrors(['email' => 'Akses ditolak']);
             }
 
@@ -55,6 +56,7 @@ class AuthController extends Controller
 
             if (Auth::user()->role !== 'admin') {
                 Auth::logout();
+
                 return back()->withErrors(['email' => 'Bukan akun admin']);
             }
 
@@ -78,9 +80,10 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         $user = User::create([
@@ -88,7 +91,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => bcrypt($request->password),
-            'role' => 'customer'
+            'role' => 'customer',
         ]);
 
         Auth::login($user);
@@ -99,6 +102,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
+
         return redirect()->route('customer.login');
     }
 }

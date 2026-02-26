@@ -13,10 +13,10 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name' => 'required',
-            'phone' => 'nullable',
-            'password' => 'nullable|min:6|confirmed',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|min:8|confirmed',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $user->name = $request->name;

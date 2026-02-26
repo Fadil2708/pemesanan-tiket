@@ -11,7 +11,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user','showtime.film'])
+        $orders = Order::with(['user', 'showtime.film'])
             ->latest()
             ->get();
 
@@ -24,7 +24,7 @@ class OrderController extends Controller
             'user',
             'showtime.film',
             'showtime.studio',
-            'tickets.seat'
+            'tickets.seat',
         ]);
 
         return view('admin.orders.show', compact('order'));
@@ -36,7 +36,7 @@ class OrderController extends Controller
 
             // 1️⃣ Update status order
             $order->update([
-                'status' => 'canceled'
+                'status' => 'canceled',
             ]);
 
             // 2️⃣ Ambil semua ticket
@@ -47,14 +47,14 @@ class OrderController extends Controller
                     ->where('seat_id', $ticket->seat_id)
                     ->update([
                         'status' => 'available',
-                        'locked_at' => null
+                        'locked_at' => null,
+                        'locked_by' => null,
                     ]);
             }
 
         });
 
         return redirect()->route('orders.index')
-            ->with('success','Order dibatalkan & kursi dikembalikan');
+            ->with('success', 'Order dibatalkan & kursi dikembalikan');
     }
 }
-

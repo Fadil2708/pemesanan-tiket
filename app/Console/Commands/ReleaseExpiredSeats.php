@@ -2,30 +2,22 @@
 
 namespace App\Console\Commands;
 
+use App\Services\BookingService;
 use Illuminate\Console\Command;
-use App\Models\ShowtimeSeat;
-use Carbon\Carbon;
 
 class ReleaseExpiredSeats extends Command
 {
     protected $signature = 'seats:release-expired';
 
-    protected $description = 'Release expired locked seats';
+    protected $description = 'Release expired locked seats automatically';
 
     public function handle()
     {
-        $expiredSeats = ShowtimeSeat::where('status', 'locked')
-            ->whereNotNull('locked_at')
-            ->where('locked_at', '<=', Carbon::now()->subMinutes(5))
-            ->get();
+        $service = app(BookingService::class);
+        $count = $service->releaseAllExpiredLocks();
 
-        foreach ($expiredSeats as $seat) {
-            $seat->update([
-                'status' => 'available',
-                'locked_at' => null
-            ]);
-        }
+        $this->info("Expired seats released: {$count}");
 
-        $this->info('Expired seats released: ' . $expiredSeats->count());
+        return 0;
     }
 }

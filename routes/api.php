@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\BookingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BookingController;
 
 Route::post('/lock-seat/{id}', [BookingController::class, 'lockSeat']);
 Route::post('/checkout', [BookingController::class, 'checkout'])

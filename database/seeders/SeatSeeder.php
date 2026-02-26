@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Seat;
 use App\Models\Studio;
+use Illuminate\Database\Seeder;
 
 class SeatSeeder extends Seeder
 {
@@ -14,16 +13,46 @@ class SeatSeeder extends Seeder
      */
     public function run(): void
     {
-        $studio = Studio::first();
+        $studios = Studio::all();
 
-        foreach (range('A','E') as $row) {
-            for ($i = 1; $i <= 5; $i++) {
-                Seat::create([
-                    'studio_id' => $studio->id,
-                    'seat_number' => $row.$i,
-                    'seat_type' => 'regular'
-                ]);
+        foreach ($studios as $studio) {
+            $seats = [];
+
+            // Generate 8 rows (A-H) × 10 columns (1-10) = 80 seats per studio
+            $rows = range('A', 'H');
+            $columns = range(1, 10);
+
+            foreach ($rows as $row) {
+                foreach ($columns as $col) {
+                    $seatNumber = $row . $col;
+
+                    // Determine seat type based on position
+                    $seatType = 'regular';
+
+                    // Front 2 rows (A, B) = VIP
+                    if (in_array($row, ['A', 'B'])) {
+                        $seatType = 'vip';
+                    }
+
+                    // Middle rows, columns 4-7 = Couple seats
+                    if (in_array($row, ['D', 'E']) && in_array($col, [4, 5, 6, 7])) {
+                        $seatType = 'couple';
+                    }
+
+                    $seats[] = [
+                        'studio_id' => $studio->id,
+                        'seat_number' => $seatNumber,
+                        'seat_type' => $seatType,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
+
+            // Insert seats for this studio
+            Seat::insert($seats);
         }
+
+        $this->command->info('✅ Seats seeded successfully! (' . Seat::count() . ' seats created)');
     }
 }

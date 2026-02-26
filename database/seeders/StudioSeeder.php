@@ -12,9 +12,24 @@ class StudioSeeder extends Seeder
      */
     public function run(): void
     {
-        Studio::create([
-            'name' => 'Studio 1',
-            'type' => 'IMAX'
-        ]);
+        $studios = [
+            ['name' => 'Studio 1', 'type' => '2D'],
+            ['name' => 'Studio 2', 'type' => '2D'],
+            ['name' => 'Studio 3', 'type' => '3D'],
+            ['name' => 'Studio 4', 'type' => 'IMAX'],
+            ['name' => 'Studio 5', 'type' => 'Dolby'],
+            ['name' => 'Studio 6', 'type' => '2D'],
+            ['name' => 'Studio 7', 'type' => '3D'],
+            ['name' => 'Studio 8', 'type' => 'IMAX'],
+        ];
+
+        foreach ($studios as $studio) {
+            Studio::firstOrCreate(
+                ['name' => $studio['name']],
+                ['type' => $studio['type']]
+            );
+        }
+
+        $this->command->info('✅ Studios seeded successfully!');
     }
 }

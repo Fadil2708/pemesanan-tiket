@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;  
 
 class Order extends Model
 {
@@ -16,7 +16,7 @@ class Order extends Model
         'total_price',
         'status',
         'payment_method',
-        'expires_at'
+        'expires_at',
     ];
 
     protected $casts = [

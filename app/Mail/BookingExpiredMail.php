@@ -2,10 +2,10 @@
 
 namespace App\Mail;
 
+use App\Models\Order;
+use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Bus\Queueable;
-use App\Models\Order;
 
 class BookingExpiredMail extends Mailable
 {
@@ -21,6 +21,6 @@ class BookingExpiredMail extends Mailable
     public function build()
     {
         return $this->subject('Booking Anda Telah Dibatalkan')
-                    ->view('emails.booking-expired');
+            ->view('emails.booking-expired');
     }
 }

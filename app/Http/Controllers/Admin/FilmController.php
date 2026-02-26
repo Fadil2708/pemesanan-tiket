@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -11,6 +12,7 @@ class FilmController extends Controller
     public function index()
     {
         $films = Film::latest()->get();
+
         return view('admin.films.index', compact('films'));
     }
 
@@ -21,12 +23,21 @@ class FilmController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'duration' => 'required|integer|min:1',
+            'age_rating' => 'nullable|string|max:10',
+            'release_date' => 'nullable|date',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
         $data = $request->only([
             'title',
             'description',
             'duration',
             'age_rating',
-            'release_date'
+            'release_date',
         ]);
 
         if ($request->hasFile('poster')) {
@@ -47,12 +58,21 @@ class FilmController extends Controller
 
     public function update(Request $request, Film $film)
     {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'duration' => 'required|integer|min:1',
+            'age_rating' => 'nullable|string|max:10',
+            'release_date' => 'nullable|date',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
         $data = $request->only([
             'title',
             'description',
             'duration',
             'age_rating',
-            'release_date'
+            'release_date',
         ]);
 
         if ($request->hasFile('poster')) {
@@ -68,7 +88,7 @@ class FilmController extends Controller
         $film->update($data);
 
         return redirect()->route('films.index')
-            ->with('success','Film berhasil diupdate');
+            ->with('success', 'Film berhasil diupdate');
     }
 
     public function destroy(Film $film)

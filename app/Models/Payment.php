@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory; 
 
 class Payment extends Model
 {
@@ -11,9 +11,16 @@ class Payment extends Model
 
     protected $fillable = [
         'order_id',
+        'payment_method',
         'payment_reference',
         'payment_status',
-        'paid_at'
+        'amount',
+        'paid_at',
+    ];
+
+    protected $casts = [
+        'paid_at' => 'datetime',
+        'amount' => 'decimal:2',
     ];
 
     public function order()

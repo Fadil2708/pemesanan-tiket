@@ -2,11 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\ShowtimeSeat;
-use App\Models\Showtime;
-use App\Models\Seat;
 
 class ShowtimeSeatSeeder extends Seeder
 {
@@ -15,22 +11,19 @@ class ShowtimeSeatSeeder extends Seeder
      */
     public function run(): void
     {
-        $showtimes = Showtime::all();
-        $seats = Seat::all();
+        $showtimes = \App\Models\Showtime::all();
 
         foreach ($showtimes as $showtime) {
-            foreach ($seats as $seat) {
+            $seats = \App\Models\Seat::where('studio_id', $showtime->studio_id)->get();
 
-                ShowtimeSeat::updateOrCreate(
-                    [
-                        'showtime_id' => $showtime->id,
-                        'seat_id' => $seat->id,
-                    ],
-                    [
-                        'status' => 'available',
-                        'locked_at' => null
-                    ]
-                );
+            foreach ($seats as $seat) {
+                \App\Models\ShowtimeSeat::create([
+                    'showtime_id' => $showtime->id,
+                    'seat_id' => $seat->id,
+                    'status' => 'available',
+                    'locked_at' => null,
+                    'locked_by' => null,
+                ]);
             }
         }
     }

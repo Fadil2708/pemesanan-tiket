@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Seat extends Model
 {
@@ -12,7 +12,7 @@ class Seat extends Model
     protected $fillable = [
         'studio_id',
         'seat_number',
-        'seat_type'
+        'seat_type',
     ];
 
     public function studio()

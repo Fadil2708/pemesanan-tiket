@@ -13,7 +13,8 @@ class ShowtimeSeat extends Model
         'showtime_id',
         'seat_id',
         'status',
-        'locked_at'
+        'locked_at',
+        'locked_by',
     ];
 
     public function showtime()

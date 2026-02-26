@@ -14,10 +14,15 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->string('payment_method')->nullable(); // Midtrans, manual, etc.
             $table->string('payment_reference')->nullable();
-            $table->enum('payment_status', ['pending','success','failed'])->default('pending');
+            $table->enum('payment_status', ['pending', 'success', 'failed'])->default('pending');
+            $table->decimal('amount', 12, 2)->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
+
+            $table->index('payment_status');
+            $table->index('paid_at');
         });
     }
 

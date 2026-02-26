@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model
 {
@@ -13,7 +13,7 @@ class Ticket extends Model
         'order_id',
         'seat_id',
         'price',
-        'qr_code'
+        'qr_code',
     ];
 
     public function order()
